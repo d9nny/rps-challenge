@@ -4,13 +4,15 @@ require_relative './lib/game'
 
 class RockPaperScissors < Sinatra::Base
 
+  enable :sessions
+
   def load_state
-    @game = $game
+    @game = session[:game]
     @current_player = @game.current_player
   end
 
   def load_switch
-    @game = $game
+    @game = session[:game]
     @game.switch
   end
 
@@ -34,19 +36,19 @@ class RockPaperScissors < Sinatra::Base
   post '/names1' do
     player_1 = Player.new(params[:player_1])
     player_2 = Player.new("Computer")
-    $game = Game.new(player_1, player_2)
+    session[:game] = Game.new(player_1, player_2)
     redirect '/play'
   end
 
   post '/names2' do
     player_1 = Player.new(params[:player_1])
     player_2 = Player.new(params[:player_2])
-    $game = Game.new(player_1, player_2)
+    session[:game] = Game.new(player_1, player_2)
     redirect '/play'
   end
 
   get '/play' do
-    @game = $game
+    @game = session[:game]
     erb(:play)
   end
 
@@ -111,20 +113,20 @@ class RockPaperScissors < Sinatra::Base
   end
 
   get '/computer' do
-    @game = $game
+    @game = session[:game]
     @game.log_move(:comp)
     @game.switch
     erb(:results)
   end
 
   get '/results' do
-    @game = $game
+    @game = session[:game]
     redirect '/draw' if @game.draw?
     erb(:results)
   end
 
   get '/draw' do
-    @game = $game
+    @game = session[:game]
     erb(:draw)
   end
 
